@@ -27,7 +27,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) //CascadeType.ALL means when we delete the user all address should also delete
     private List<Address> address;
 
-     @Embedded
+
      @ElementCollection // Tells JPA: “Make a new table for this list.”
      //used when we do not want to create an entity
      //like it will not have id , primary key etc

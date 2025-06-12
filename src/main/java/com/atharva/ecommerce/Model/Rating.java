@@ -1,5 +1,6 @@
 package com.atharva.ecommerce.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ public class Rating {
     private User user;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "product_id",nullable = false)
     private Product product;
 
