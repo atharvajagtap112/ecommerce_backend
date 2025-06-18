@@ -41,7 +41,7 @@ public class Product {
    private List<Rating> rating=new ArrayList<>();
 
    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-   private List<Reviews> reviews=new ArrayList<>();
+   private List<Review> reviews=new ArrayList<>();
 
    @Column(name = "num_rating")
    private int numRating;
@@ -54,7 +54,7 @@ public class Product {
 
    public Product() {}
 
-    public Product(Long id, String title, double price, String description, int discountPresent, int discountPrice, String brand, int quantity, String color, Set<Size> sizes, String imageUrl, List<Rating> rating, List<Reviews> reviews, int numRating, Category category, LocalDateTime createdAt) {
+    public Product(Long id, String title, double price, String description, int discountPresent, int discountPrice, String brand, int quantity, String color, Set<Size> sizes, String imageUrl, List<Rating> rating, List<Review> reviews, int numRating, Category category, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -169,11 +169,11 @@ public class Product {
         this.rating = rating;
     }
 
-    public List<Reviews> getReviews() {
+    public List<Review> getReviews() {
         return reviews;
     }
 
-    public void setReviews(List<Reviews> reviews) {
+    public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
 

@@ -2,10 +2,12 @@ package com.atharva.ecommerce.Controller;
 
 import com.atharva.ecommerce.Config.JwtProvider;
 import com.atharva.ecommerce.Exception.UserException;
+import com.atharva.ecommerce.Model.Cart;
 import com.atharva.ecommerce.Model.User;
 import com.atharva.ecommerce.Repository.UserRepository;
 import com.atharva.ecommerce.Request.LoginRequest;
 import com.atharva.ecommerce.Response.AuthResponse;
+import com.atharva.ecommerce.Service.CartService;
 import com.atharva.ecommerce.Service.CustomUserServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,15 +32,17 @@ public class AuthController {
     private JwtProvider jwtProvider;
     private PasswordEncoder passwordEncoder;
     private CustomUserServiceImplementation customUserServiceImplementation;
+    private CartService cartService;
 
     public AuthController(UserRepository userRepository,
                           JwtProvider jwtProvider,
                           PasswordEncoder passwordEncoder,
-                          CustomUserServiceImplementation customUserServiceImplementation) {
+                          CustomUserServiceImplementation customUserServiceImplementation , CartService cartService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
         this.customUserServiceImplementation = customUserServiceImplementation;
+        this.cartService = cartService;
     }
 
     @PostMapping("/signup")
@@ -60,7 +64,11 @@ public class AuthController {
        createdUser.setFirstName(firstName);
        createdUser.setLastName(lastName);
 
+
+
       User savedUser= userRepository.save(createdUser);
+
+       cartService.createCart(savedUser);
 
       Authentication authentication=new UsernamePasswordAuthenticationToken(savedUser.getEmail(), savedUser.getPassword());
       SecurityContextHolder.getContext().setAuthentication(authentication);

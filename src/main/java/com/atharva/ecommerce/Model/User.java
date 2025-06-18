@@ -24,6 +24,7 @@ public class User {
 
     private String role;
 
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) //CascadeType.ALL means when we delete the user all address should also delete
     private List<Address> address;
 
@@ -45,7 +46,7 @@ public class User {
 
      @OneToMany(mappedBy = "user")
      @JsonIgnore
-     private List<Reviews> reviews;
+     private List<Review> reviews;
 
 
      private LocalDateTime createdAt;
@@ -54,7 +55,7 @@ public class User {
 
      }
 
-    public User(Long id, String firstName, String lastName, String email, String password, String mobile, String role, List<Address> address, List<PaymentInformation> paymentInformationList, List<Rating> ratings, List<Reviews> reviews, LocalDateTime createdAt) {
+    public User(Long id, String firstName, String lastName, String email, String password, String mobile, String role, List<Address> address, List<PaymentInformation> paymentInformationList, List<Rating> ratings, List<Review> reviews, LocalDateTime createdAt) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -149,11 +150,11 @@ public class User {
         this.ratings = ratings;
     }
 
-    public List<Reviews> getReviews() {
+    public List<Review> getReviews() {
         return reviews;
     }
 
-    public void setReviews(List<Reviews> reviews) {
+    public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
 
