@@ -19,7 +19,7 @@ FROM openjdk:8-jdk-slim
 WORKDIR /app
 
 # Expose application port
-EXPOSE 8080
+EXPOSE 5454
 
 # Copy the built JAR from the build stage
 COPY --from=build /app/target/ecommerce-0.0.1-SNAPSHOT.jar app.jar
