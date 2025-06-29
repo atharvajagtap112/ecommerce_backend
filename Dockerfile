@@ -1,5 +1,5 @@
 # Stage 1: Build the application using Maven and JDK 1.8
-FROM maven:3.6.3-openjdk-8 AS build
+FROM maven:3.9.6-eclipse-temurin-20 AS build
 
 # Set working directory inside the container
 WORKDIR /app
@@ -13,7 +13,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage 2: Create a lightweight image for running the app
-FROM openjdk:8-jdk-slim
+FROM eclipse-temurin:20-jdk
 
 # Set working directory
 WORKDIR /app
