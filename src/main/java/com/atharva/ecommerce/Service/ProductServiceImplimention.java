@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,11 +56,11 @@ public class ProductServiceImplimention implements ProductService {
 
 // Fetch or create third-level category
         Category thirdLevel = categoryRepository
-                .findByNameAndParent(req.getThridLevelCategory(), secondLevel.getName());
+                .findByNameAndParent(req.getThirdLevelCategory(), secondLevel.getName());
 
         if (thirdLevel == null) {
             Category thirdLevelCategory = new Category();
-            thirdLevelCategory.setName(req.getThridLevelCategory());
+            thirdLevelCategory.setName(req.getThirdLevelCategory());
             thirdLevelCategory.setParentCategory(secondLevel);
             thirdLevelCategory.setLevel(3);
 
@@ -118,8 +117,10 @@ public class ProductServiceImplimention implements ProductService {
     }
 
     @Override
-    public Product findProductByCategory(String Category) {
-        return null;
+    public List<Product> findProductsByCategory(String category) {
+
+        List<Product> products= productRepository.findbyCategory(category);
+        return products;
     }
 
     @Override

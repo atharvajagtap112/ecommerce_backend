@@ -40,7 +40,9 @@ public class AppConfig {
                                             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                                                 CorsConfiguration cfg = new CorsConfiguration();
                                                 cfg.setAllowedOrigins(List.of(
-                                                        "http://localhost:3030"));
+                                                        "http://localhost:3000",
+                                                        "https://intellishopy.vercel.app"
+                                                        ));
                                                 cfg.setAllowedMethods(Collections.singletonList("*"));
                                                 cfg.setAllowCredentials(true);
                                                 cfg.setAllowedHeaders(Collections.singletonList("*"));

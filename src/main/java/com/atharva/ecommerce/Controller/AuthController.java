@@ -54,7 +54,8 @@ public class AuthController {
 
        User isEmailExist= userRepository.findByEmail(email);
        if(isEmailExist != null){
-           throw new UserException("Email Already Exists With Another Account");
+
+         throw new UserException("Email Already Exists");
 
        }
 
@@ -82,7 +83,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponse> loginUserHandler(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<AuthResponse> loginUserHandler(@RequestBody LoginRequest loginRequest) throws UserException, BadCredentialsException {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
 

@@ -32,6 +32,7 @@ public class ReviewServiceImplementation implements ReviewService {
        review.setReview(req.getReview());
        review.setUser(user);
        review.setProduct(product);
+       review.setRating(req.getRating());
        review.setCreatedAt(LocalDateTime.now());
       return reviewRepository.save(review);
     }

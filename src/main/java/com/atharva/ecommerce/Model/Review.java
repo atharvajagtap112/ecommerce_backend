@@ -26,8 +26,28 @@ public class Review {
 
     private LocalDateTime createdAt;
 
+    private Double rating;
+
+
     public Review() {}
-    public Review(String review, Product product, User user, LocalDateTime createdAt) {};
+
+
+    public Review(Long id, String review, Product product, User user, LocalDateTime createdAt, Double rating) {
+        this.id = id;
+        this.review = review;
+        this.product = product;
+        this.user = user;
+        this.createdAt = createdAt;
+        this.rating = rating;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
 
     public Long getId() {
         return id;

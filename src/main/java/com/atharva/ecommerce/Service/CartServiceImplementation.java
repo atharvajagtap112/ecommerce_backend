@@ -49,6 +49,7 @@ public class CartServiceImplementation implements CartService {
 
             cartItem.setPrice(price);
             cartItem.setDiscountedPrice( (req.getQuantity()*product.getDiscountPrice()));
+           cartItem.setSize(req.getSize());
 
             CartItem createdCartItem=cartItemService.createCartItem(cartItem);
 
@@ -57,15 +58,16 @@ public class CartServiceImplementation implements CartService {
 
         }
        else {
-         isPresent.setQuantity(req.getQuantity());
+         isPresent.setQuantity(isPresent.getQuantity()+req.getQuantity());
             int price= (int) (req.getQuantity()*product.getPrice());
             isPresent.setPrice(price);
             isPresent.setDiscountedPrice(req.getQuantity()*product.getDiscountPrice());
 
+
          CartItem   updatedCartItem  = cartItemService.updateCartItem(userId,isPresent.getId(),isPresent);
-            cart.getCartItems().removeIf(item -> item.getId().equals(updatedCartItem.getId()));
-            cart.getCartItems().add(updatedCartItem);
-            cartRepository.save(cart);
+//            cart.getCartItems().removeIf(item -> item.getId().equals(updatedCartItem.getId()));
+//            cart.getCartItems().add(updatedCartItem);
+//            cartRepository.save(cart);
         }
 
         return "Item added to cart";

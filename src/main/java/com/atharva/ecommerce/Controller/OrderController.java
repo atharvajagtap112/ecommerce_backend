@@ -5,6 +5,8 @@ import com.atharva.ecommerce.Exception.UserException;
 import com.atharva.ecommerce.Model.Address;
 import com.atharva.ecommerce.Model.Order;
 import com.atharva.ecommerce.Model.User;
+import com.atharva.ecommerce.Repository.OrderRepository;
+import com.atharva.ecommerce.Response.ApiResponse;
 import com.atharva.ecommerce.Service.OrderService;
 import com.atharva.ecommerce.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/orders")
@@ -20,6 +23,9 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private UserService userService;
@@ -35,11 +41,18 @@ public class OrderController {
        return new ResponseEntity<Order>(order, HttpStatus.CREATED);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<Order>> userOrdersHistory(@RequestHeader("Authorization") String jwt) throws UserException{
+    @PostMapping("/user")
+    public ResponseEntity<List<Order>> userOrdersHistory(@RequestHeader("Authorization") String jwt , @RequestBody List<String> status)  throws UserException{
 
         User user =userService.findUserProfileByJwt(jwt);
        List<Order> orders= orderService.usersOrderHistory(user.getId());
+
+       if (!status.get(0).equals("ALL")){
+           orders = orders.stream()
+                   .filter(order -> status.contains(order.getOrderStatus()))
+                   .collect(Collectors.toList());
+       }
+
        return new ResponseEntity<>(orders, HttpStatus.CREATED);
     }
 
@@ -50,5 +63,17 @@ public class OrderController {
         Order order=orderService.findOrderById(id);
         return new  ResponseEntity<Order>(order,HttpStatus.CREATED);
     }
+
+        @PostMapping("/updateStatus/{orderId}")
+        public ResponseEntity<ApiResponse> updateStatus(@PathVariable(name = "orderId") Long orderId,@RequestParam String status ) throws UserException, OrderException {
+          Order order=orderService.findOrderById(orderId);
+          order.setOrderStatus(status);
+
+          orderRepository.save(order);
+
+
+          ApiResponse apiResponse=new ApiResponse("updated",true);
+          return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.OK);
+        }
 
 }

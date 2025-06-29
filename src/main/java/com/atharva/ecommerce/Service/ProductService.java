@@ -13,7 +13,10 @@ public interface ProductService {
     public String deleteProduct(Long id) throws ProductException;
     public Product updateProduct(Long productId,Product req) throws ProductException;
     public Product findProductById(Long id) throws ProductException;
-    public Product findProductByCategory(String Category) ;
+    public List<Product> findProductsByCategory(String Category) ;
+
+  ;
+
     public Page<Product> getAllProduct(
             String category,
             List<String> colors,

@@ -52,18 +52,23 @@ public class OrderServiceImplementation implements OrderService {
         for (CartItem item : cart.getCartItems()) {
             OrderItem orderItem = new OrderItem();
             orderItem.setPrice(item.getPrice());
+            orderItem.setDiscountedPrice(item.getDiscountedPrice());
             orderItem.setProduct(item.getProduct());
+            orderItem.setSize(item.getSize());
+            orderItem.setUserId(user.getId());
             orderItem.setQuantity(item.getQuantity());
+
             orderItems.add(orderItem);
-            orderItem.setId(item.getId());
+
         }
 
         Order createdOrder = new Order();
         createdOrder.setUser(user);
         createdOrder.setOrderItems(orderItems);
-        createdOrder.setDiscount(cart.getDiscount());
+        createdOrder.setDiscount(cart.getTotalDiscountPrice());
         createdOrder.setTotalItem(cart.getTotalItem());
-
+        createdOrder.setTotalPrice(cart.getTotalPrice());
+        createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountPrice());
         createdOrder.setShippingAddress(address);
         createdOrder.setOrderDate(LocalDateTime.now());
         createdOrder.setOrderStatus("PENDING");  // Enum

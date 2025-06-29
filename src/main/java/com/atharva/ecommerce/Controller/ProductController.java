@@ -2,6 +2,9 @@ package com.atharva.ecommerce.Controller;
 
 import com.atharva.ecommerce.Exception.ProductException;
 import com.atharva.ecommerce.Model.Product;
+import com.atharva.ecommerce.Repository.ProductRepository;
+import com.atharva.ecommerce.Request.ProductCategoryRequest;
+import com.atharva.ecommerce.Response.ProductsByCategoryResponse;
 import com.atharva.ecommerce.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,13 +12,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/products")
+
+
+
 public class ProductController {
     @Autowired
      private ProductService productService;
+
+   @Autowired
+   private ProductRepository productRepository;
 
 
     @GetMapping()
@@ -40,7 +50,7 @@ public class ProductController {
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/id/{productId}")
+    @GetMapping("/{productId}")
     public ResponseEntity<Product> findProductByIdHandler(@PathVariable Long productId) throws ProductException {
         Product product =productService.findProductById(productId);
 
@@ -53,5 +63,39 @@ public class ProductController {
 //        return new ResponseEntity<>(products, HttpStatus.OK);
 //    }
 
+
+
+    @PostMapping("/bycategories")
+    public ResponseEntity<List<ProductsByCategoryResponse>> getProductsByCategoryHandler(@RequestBody List<ProductCategoryRequest> categories) throws ProductException {
+          List<ProductsByCategoryResponse> productsByCategoryResponseList =new ArrayList<>();
+        for (ProductCategoryRequest category : categories) {
+           List<Product> products= productService.findProductsByCategory(category.getCategoryName());
+           products=products.subList(0,Math.min(products.size(),10));
+
+           ProductsByCategoryResponse productsByCategoryResponse =new ProductsByCategoryResponse();
+           productsByCategoryResponse.setProducts(products);
+            productsByCategoryResponse.setCategoryName(category.getCategoryTitle());
+
+            productsByCategoryResponseList.add(productsByCategoryResponse);
+        }
+
+
+        return new ResponseEntity<>(productsByCategoryResponseList, HttpStatus.ACCEPTED);
+    }
+
+
+    @PostMapping("delete/bycategories")
+    public ResponseEntity<String> getProductsByCategoryHandler(@RequestParam String category) throws ProductException {
+
+
+            List<Product> products= productService.findProductsByCategory(category);
+
+
+                   productRepository.deleteAll(products);
+
+
+
+        return new ResponseEntity<String>("deleted succesfully", HttpStatus.ACCEPTED);
+    }
 
 }

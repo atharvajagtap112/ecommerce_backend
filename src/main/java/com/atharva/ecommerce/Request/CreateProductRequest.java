@@ -29,7 +29,7 @@ public class CreateProductRequest {
 
     private String topLevelCategory;
     private String secLevelCategory;
-    private String thridLevelCategory;
+    private String thirdLevelCategory;
 
     public CreateProductRequest() {}
 
@@ -138,11 +138,11 @@ public class CreateProductRequest {
         this.secLevelCategory = secLevelCategory;
     }
 
-    public String getThridLevelCategory() {
-        return thridLevelCategory;
+    public String getThirdLevelCategory() {
+        return thirdLevelCategory;
     }
 
-    public void setThridLevelCategory(String thridLevelCategory) {
-        this.thridLevelCategory = thridLevelCategory;
+    public void setThirdLevelCategory(String thirdLevelCategory) {
+        this.thirdLevelCategory = thirdLevelCategory;
     }
 }
