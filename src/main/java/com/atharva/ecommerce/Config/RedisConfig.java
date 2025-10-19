@@ -3,10 +3,10 @@ package com.atharva.ecommerce.Config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.lettuce.core.ClientOptions;
-import io.lettuce.core.SslOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -24,44 +24,56 @@ import java.time.Duration;
 
 @Configuration
 @EnableCaching
-public class RedisConfig {
+public class RedisConfig implements CachingConfigurer {
 
-    @Value("${spring.redis.host:localhost}")
-    private String redisHost;
-
-    @Value("${spring.redis.port:6379}")
-    private int redisPort;
-
-    @Value("${spring.redis.password:}")
-    private String redisPassword;
-
-    @Value("${spring.redis.ssl.enabled:false}")
-    private boolean sslEnabled;
+    @Value("${spring.data.redis.url}")
+    private String redisUrl;
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
-        redisConfig.setHostName(redisHost);
-        redisConfig.setPort(redisPort);
+        System.out.println("=== Redis Configuration ===");
+        System.out.println("Redis URL: " + (redisUrl != null ? redisUrl.replaceAll(":[^:/@]+@", ":***@") : "NOT SET"));
+        System.out.println("========================");
 
-        if (redisPassword != null && !redisPassword.isEmpty()) {
-            redisConfig.setPassword(redisPassword);
+        // Parse Redis URL
+        // Format: rediss://default:password@host:port
+        String cleanUrl = redisUrl.replace("rediss://", "").replace("redis://", "");
+        boolean useSsl = redisUrl.startsWith("rediss://");
+
+        String[] parts = cleanUrl.split("@");
+        String credentials = parts[0];
+        String hostPort = parts[1];
+
+        String[] credParts = credentials.split(":");
+        String password = credParts.length > 1 ? credParts[1] : null;
+
+        String[] hostPortParts = hostPort.split(":");
+        String host = hostPortParts[0];
+        int port = Integer.parseInt(hostPortParts[1]);
+
+        System.out.println("Parsed - Host: " + host + ", Port: " + port + ", SSL: " + useSsl);
+
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
+        redisConfig.setHostName(host);
+        redisConfig.setPort(port);
+
+        if (password != null && !password.isEmpty()) {
+            redisConfig.setPassword(password);
         }
 
         LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder =
                 LettuceClientConfiguration.builder();
 
-        if (sslEnabled) {
-            SslOptions sslOptions = SslOptions.builder().build();
-            ClientOptions clientOptions = ClientOptions.builder()
-                    .sslOptions(sslOptions)
-                    .build();
-            clientConfigBuilder.clientOptions(clientOptions).useSsl();
+        if (useSsl) {
+            clientConfigBuilder.useSsl().disablePeerVerification();
         }
 
-        clientConfigBuilder.commandTimeout(Duration.ofSeconds(2));
+        clientConfigBuilder.commandTimeout(Duration.ofSeconds(10));
 
-        return new LettuceConnectionFactory(redisConfig, clientConfigBuilder.build());
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(redisConfig, clientConfigBuilder.build());
+        factory.afterPropertiesSet();
+
+        return factory;
     }
 
     @Bean
@@ -95,6 +107,7 @@ public class RedisConfig {
 
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
+                .disableCachingNullValues()
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())
                 )
@@ -105,5 +118,31 @@ public class RedisConfig {
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(cacheConfig)
                 .build();
+    }
+
+    @Bean
+    @Override
+    public CacheErrorHandler errorHandler() {
+        return new CacheErrorHandler() {
+            @Override
+            public void handleCacheGetError(RuntimeException exception, org.springframework.cache.Cache cache, Object key) {
+                System.err.println("⚠️ Cache GET error - continuing without cache: " + exception.getMessage());
+            }
+
+            @Override
+            public void handleCachePutError(RuntimeException exception, org.springframework.cache.Cache cache, Object key, Object value) {
+                System.err.println("⚠️ Cache PUT error - continuing without cache: " + exception.getMessage());
+            }
+
+            @Override
+            public void handleCacheEvictError(RuntimeException exception, org.springframework.cache.Cache cache, Object key) {
+                System.err.println("⚠️ Cache EVICT error: " + exception.getMessage());
+            }
+
+            @Override
+            public void handleCacheClearError(RuntimeException exception, org.springframework.cache.Cache cache) {
+                System.err.println("⚠️ Cache CLEAR error: " + exception.getMessage());
+            }
+        };
     }
 }
