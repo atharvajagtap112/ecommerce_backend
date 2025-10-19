@@ -19,6 +19,14 @@ public class ProductCategoryRequest implements Serializable {
         return categoryTitle;
     }
 
+    @Override
+    public String toString() {
+        return "ProductCategoryRequest{" +
+                "categoryTitle='" + categoryTitle + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                '}';
+    }
+
     public void setCategoryTitle(String categoryTitle) {
         this.categoryTitle = categoryTitle;
     }
