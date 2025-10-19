@@ -1,6 +1,8 @@
 package com.atharva.ecommerce.Request;
 
-public class ProductCategoryRequest {
+import java.io.Serializable;
+
+public class ProductCategoryRequest implements Serializable {
     String categoryTitle;
     String categoryName;
 

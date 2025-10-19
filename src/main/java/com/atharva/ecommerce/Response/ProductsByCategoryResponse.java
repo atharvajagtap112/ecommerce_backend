@@ -2,9 +2,10 @@ package com.atharva.ecommerce.Response;
 
 import com.atharva.ecommerce.Model.Product;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ProductsByCategoryResponse {
+public class ProductsByCategoryResponse  implements Serializable {
     String categoryName;
     List<Product> products;
 

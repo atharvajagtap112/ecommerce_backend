@@ -7,6 +7,7 @@ import com.atharva.ecommerce.Request.ProductCategoryRequest;
 import com.atharva.ecommerce.Response.ProductsByCategoryResponse;
 import com.atharva.ecommerce.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +67,7 @@ public class ProductController {
 
 
     @PostMapping("/bycategories")
+    @Cacheable(value ="ProductsByCategories" ,key = "#categories.toString()")
     public ResponseEntity<List<ProductsByCategoryResponse>> getProductsByCategoryHandler(@RequestBody List<ProductCategoryRequest> categories) throws ProductException {
           List<ProductsByCategoryResponse> productsByCategoryResponseList =new ArrayList<>();
         for (ProductCategoryRequest category : categories) {
